@@ -22,13 +22,13 @@ def upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
-            return '''<!DOCTYPE html><html><title>Failure</title> <h1>No file part</h1></html>'''
+            return render_template('upload.html')
         file = request.files['file']
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
             flash('No selected file')
-            return '''<!DOCTYPE html><html><title>Failure</title> <h1>No selected file</h1></html>'''
+            return render_template('upload.html')
         if file:
             filename = file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
