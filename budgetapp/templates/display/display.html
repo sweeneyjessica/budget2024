@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Data{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('upload.upload') }}">Upload</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for datum in data %}
+                <tr>
+                    <td>{{datum[0]}}</td>
+                    <td>{{datum[1]}}</td>
+                </tr>
+                {% if not loop.last %}
+                    <hr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

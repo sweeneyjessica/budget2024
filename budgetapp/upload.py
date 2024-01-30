@@ -1,8 +1,9 @@
 import functools
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
+from werkzeug.utils import secure_filename
 
 from budgetapp.db import get_db
 from budgetapp.auth import login_required
@@ -26,10 +27,10 @@ def upload():
             error = 'File type must be specified.'
 
         if error is None:
-            filename = file.filename
-            file.save(os.path.join('data2/', filename))
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
 
-            with open(os.path.join('data2/', filename)) as csvfile:
+            with open(os.path.join(current_app.config['UPLOAD_FOLDER'], filename)) as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 firstRow = True
 
@@ -37,6 +38,9 @@ def upload():
                     if firstRow:
                         firstRow = False
                         continue
+
+                    if len(row) < 7: 
+                        continue # change to quarantine at some point
 
                     if row[5] != '': # debit 
                         db.execute(
@@ -58,6 +62,8 @@ def upload():
                         db.commit()
                         error = "No transaction amount found."
 
+            return redirect(url_for('display.display'))
+        
         flash(error)
 
     return render_template('upload/upload.html')
