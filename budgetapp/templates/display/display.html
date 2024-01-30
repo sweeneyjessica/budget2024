@@ -11,15 +11,17 @@
     <table>
         <thead>
             <tr>
-                <th>Description</th>
-                <th>Amount</th>
+                {% for header in headers %}
+                    <th>{{header}}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>
-            {% for datum in data %}
+            {% for row in data %}
                 <tr>
-                    <td>{{datum[0]}}</td>
-                    <td>{{datum[1]}}</td>
+                {% for item in row %}
+                    <td>{{item}}</td>
+                {% endfor %}
                 </tr>
             {% endfor %}
         </tbody>
