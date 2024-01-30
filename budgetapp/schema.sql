@@ -58,12 +58,14 @@ CREATE TABLE merchant_to_category (
   merchant TEXT PRIMARY KEY NOT NULL,
   category TEXT NOT NULL,
   information TEXT,
-  tags TEXT
+  tags TEXT,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE travel (
   day_of DATE NOT NULL,
   user_id INTEGER NOT NULL,
   is_travel_day BOOLEAN NOT NULL DEFAULT FALSE,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user (id)
 );
