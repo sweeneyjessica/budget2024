@@ -1,6 +1,7 @@
 .DS_Store
 data/
 .venv/
+uploads/
 
 *.pyc
 __pycache__/
