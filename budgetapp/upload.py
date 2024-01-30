@@ -39,30 +39,42 @@ def upload():
                         firstRow = False
                         continue
 
-                    if len(row) < 7: 
-                        continue # change to quarantine at some point
+                    if filetype == 'capone':
+                        if len(row) != 7: 
+                            continue # change to quarantine at some point
 
-                    if row[5] != '': # debit 
-                        db.execute(
-                            "INSERT INTO debit (user_id, transaction_date, card_no, descr, amount) VALUES (?, ?, ?, ?, ?)",
-                            (g.user['id'], row[0], row[2], row[3], row[5])
-                        )
-                        db.commit()
-                    elif row[6] != '': #credit
-                        db.execute(
-                            "INSERT INTO credit (user_id, transaction_date, card_no, descr, amount) VALUES (?, ?, ?, ?, ?)",
-                            (g.user['id'], row[0], row[2], row[3], row[6])
-                        )
-                        db.commit()
-                    else:
-                        db.execute(
-                            "INSERT INTO transaction_quarantine (user_id, transaction_date, card_no, descr) VALUES (?, ?, ?, ?)",
-                            (g.user['id'], row[0], row[2], row[3])
-                        )
-                        db.commit()
-                        error = "No transaction amount found."
+                        if row[5] != '': # debit 
+                            db.execute(
+                                "INSERT INTO debit (user_id, transaction_date, card_no, descr, amount) VALUES (?, ?, ?, ?, ?)",
+                                (g.user['id'], row[0], row[2], row[3], row[5])
+                            )
+                            db.commit()
+                        elif row[6] != '': #credit
+                            db.execute(
+                                "INSERT INTO credit (user_id, transaction_date, card_no, descr, amount) VALUES (?, ?, ?, ?, ?)",
+                                (g.user['id'], row[0], row[2], row[3], row[6])
+                            )
+                            db.commit()
+                        else:
+                            db.execute(
+                                "INSERT INTO transaction_quarantine (user_id, transaction_date, card_no, descr) VALUES (?, ?, ?, ?)",
+                                (g.user['id'], row[0], row[2], row[3])
+                            )
+                            db.commit()
+                            error = "No transaction amount found."
 
-            return redirect(url_for('display.display'))
+                    elif filetype == 'categories':
+                        if len(row) != 4:
+                            continue
+                        
+                        db.execute(
+                            'INSERT INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+                            (row[0], row[1], row[2], row[3])
+                        )
+                        db.commit()
+
+
+            return redirect(url_for(f'display.{filetype}'))
         
         flash(error)
 
