@@ -17,3 +17,4 @@ build/
 *.egg-info/
 
 scratch.py
+dash_app.py
