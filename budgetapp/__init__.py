@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from . import my_dash
 
 UPLOAD_FOLDER = '/Users/jessicasweeney/Documents/budget2024/uploads'
 
@@ -26,6 +27,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    with app.app_context():
+        app = my_dash.init_dashboard(app)
+
     # a simple page that says hello
     @app.route('/')
     def hello():
@@ -42,5 +46,5 @@ def create_app(test_config=None):
 
     from . import display
     app.register_blueprint(display.bp)
-
+    
     return app
