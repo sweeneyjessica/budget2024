@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask
-from . import my_dash
+from . import dashboard
 
 UPLOAD_FOLDER = '/Users/jessicasweeney/Documents/budget2024/uploads'
 
@@ -28,7 +28,7 @@ def create_app(test_config=None):
         pass
 
     with app.app_context():
-        app = my_dash.init_dashboard(app)
+        app = dashboard.init_dashboard(app)
 
     # a simple page that says hello
     @app.route('/')

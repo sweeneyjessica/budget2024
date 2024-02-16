@@ -1,4 +1,7 @@
-(C) 2024-02-03 add callback functions to +dashboard
-(A) 2024-02-03 create new +dashboard views
+x (C) 2024-02-03 2024-02-06 add callback functions to +dashboard
 (B) 2024-02-03 add automatic +labeling to uploads
 (C) 2024-02-03 add hand +labeling interface
+x (A) 2024-02-16 2024-02-16 line chart +dashboard
+x (A) 2024-02-16 2024-02-16 pie chart all expenses +dashboard
+x (A) 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboard
+(A) 2024-02-16 add category radio buttons to all graphs on +dashboard
