@@ -80,3 +80,23 @@ def upload():
 
     return render_template('upload/upload.html')
 
+@bp.route('/set-budget', methods=('GET', 'POST'))
+@login_required
+def set_budget():
+    db = get_db()
+
+    if request.method == 'POST':
+        for category in request.form:
+            db.execute(
+                'INSERT INTO budget (category, dollar_limit) VALUES (?, ?)',
+                (category, request.form[category])
+            )
+            db.commit()
+        return redirect(url_for('display.budget'))
+    else:
+        categories = db.execute(
+            'SELECT DISTINCT category '
+            ' FROM merchant_to_category'
+        ).fetchall()
+
+    return render_template('upload/set_budget.html', categories=categories)

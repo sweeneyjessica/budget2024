@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Budget Input{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('upload.upload') }}">Upload</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% for category in categories %}
+            <label for="{{category[0]}}">{{category[0]}}</label>
+            <input type="number" name="{{category[0]}}" id="{{category[0]}}" required>
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

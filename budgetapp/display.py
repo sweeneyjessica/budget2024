@@ -69,3 +69,13 @@ def dashboard():
         ' GROUP BY m.category'
     ).fetchall()
     return render_template('display/display.html', headers=['Category', 'Amount'], data=data)
+
+@bp.route('/budget')
+@login_required
+def budget():
+    db = get_db()
+    data = db.execute(
+        'SELECT category, dollar_limit, time_period'
+        ' FROM budget'
+    ).fetchall()
+    return render_template('display/display.html', headers=['Category', 'Dollar Limit', 'Time Period'], data=data)

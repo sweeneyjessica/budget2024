@@ -69,3 +69,9 @@ CREATE TABLE travel (
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES user (id)
 );
+
+CREATE TABLE budget (
+    category TEXT NOT NULL,
+    dollar_limit REAL NOT NULL,
+    time_period TEXT DEFAULT 'Monthly'
+);
