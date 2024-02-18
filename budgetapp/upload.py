@@ -9,6 +9,7 @@ from budgetapp.db import get_db
 from budgetapp.auth import login_required
 import csv
 import os
+import pandas as pd 
 
 bp = Blueprint('upload', __name__)
 
@@ -88,7 +89,7 @@ def set_budget():
     if request.method == 'POST':
         for category in request.form:
             db.execute(
-                'INSERT INTO budget (category, dollar_limit) VALUES (?, ?)',
+                'REPLACE INTO budget (category, dollar_limit) VALUES (?, ?)',
                 (category, request.form[category])
             )
             db.commit()
@@ -100,3 +101,37 @@ def set_budget():
         ).fetchall()
 
     return render_template('upload/set_budget.html', categories=categories)
+
+@bp.route('/categorize-merchants', methods=('GET', 'POST'))
+@login_required
+def categorize_merchant():
+    db = get_db()
+
+    # txns = db.execute(
+    #     'SELECT descr, amount, transaction_date'
+    #     ' FROM debit'
+    #     ' WHERE amount > 20.0'
+    #     ' GROUP BY descr'
+    #     # ' WHERE COUNT(descr) > 1 AND amount > 20.0'
+    # ).fetchall()
+
+    txns = db.execute(
+        'SELECT descr, COUNT(*) AS num_txns '
+        ' FROM debit'
+        ' GROUP BY descr'
+        ' ORDER BY num_txns DESC'
+    ).fetchall()
+
+    # txns = pd.DataFrame(txns).to_json()
+    return render_template('display/display.html', headers=['Description', 'Count'], data=txns)
+
+
+    if request.method == 'POST':
+        return request.form
+        # for merchant in request.form:
+        #     db.execute(
+        #         'REPLACE INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?)',
+        #         (merchant, request.form[merchant]category, information, tags)
+        #     )
+
+    # return txns # render_template('upload/categorize_merchants.html', length=len(txns), txns=txns)

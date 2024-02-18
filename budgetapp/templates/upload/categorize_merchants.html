@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Categorize Merchants{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('upload.upload') }}">Upload</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {{length}}
+    <form method="post">
+        {% for txn in txns %}
+            {{txn[0]}}, {{txn[1]}}, {{txn[2]}}
+            <label for="{{txn[0]}}">{{txn[0]}}</label>
+            <input type="text" name="{{txn[0]}}" id="{{txn[0]}}">
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
