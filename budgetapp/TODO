@@ -1,8 +1,10 @@
-x (C) 2024-02-03 2024-02-06 add callback functions to +dashboard
-(B) 2024-02-03 add automatic +labeling to uploads
-(C) 2024-02-03 add hand +labeling interface
-x (A) 2024-02-16 2024-02-16 line chart +dashboard
-x (A) 2024-02-16 2024-02-16 pie chart all expenses +dashboard
-x (A) 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboard
-(A) 2024-02-16 add category radio buttons to all graphs on +dashboard
-(B) 2024-02-16 click into week on bar chart and see transactions +dashboard
+x 2024-02-03 2024-02-06 add callback functions to +dashboard
+2024-02-03 add automatic +labeling to uploads
+(A) 2024-02-03 add hand +labeling interface
+x 2024-02-16 2024-02-16 line chart +dashboard
+x 2024-02-16 2024-02-16 pie chart all expenses +dashboard
+x 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboard
+2024-02-16 add category radio buttons to all graphs on +dashboard
+2024-02-16 click into week on bar chart and see transactions +dashboard
+2024-02-17 breakaway flow charts of where money since last paycheck has gone +dashboard
+(A) 2024-02-17 create useful sql queries for future use
