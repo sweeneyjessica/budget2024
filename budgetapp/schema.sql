@@ -9,7 +9,8 @@ DROP TABLE IF EXISTS budget;
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  misc_threshold REAL DEFAULT 20.0
 );
 
 CREATE TABLE debit (
@@ -20,9 +21,6 @@ CREATE TABLE debit (
   card_no INTEGER NOT NULL,
   descr TEXT NOT NULL,
   amount REAL NOT NULL,
-  category TEXT,
-  information TEXT,
-  tags TEXT,
   FOREIGN KEY (user_id) REFERENCES user (id),
   FOREIGN KEY (descr) REFERENCES merchant_to_category (merchant)
 );
@@ -35,11 +33,7 @@ CREATE TABLE credit (
   card_no INTEGER NOT NULL,
   descr TEXT NOT NULL,
   amount REAL NOT NULL,
-  category TEXT,
-  information TEXT,
-  tags TEXT,
-  FOREIGN KEY (user_id) REFERENCES user (id),
-  FOREIGN KEY (descr) REFERENCES merchant_to_category (merchant)
+  FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
 CREATE TABLE transaction_quarantine (
@@ -49,10 +43,7 @@ CREATE TABLE transaction_quarantine (
   transaction_date DATE,
   card_no INTEGER,
   descr TEXT,
-  amount REAL,
-  category TEXT,
-  information TEXT,
-  tags TEXT
+  amount REAL
 );
 
 CREATE TABLE merchant_to_category (
@@ -68,11 +59,12 @@ CREATE TABLE travel (
   user_id INTEGER NOT NULL,
   is_travel_day BOOLEAN NOT NULL DEFAULT FALSE,
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES user (id)
+  FOREIGN KEY (user_id) REFERENCES user (id),
+  PRIMARY KEY (day_of, user_id)
 );
 
 CREATE TABLE budget (
-    category TEXT NOT NULL,
+    category TEXT PRIMARY KEY NOT NULL,
     dollar_limit REAL NOT NULL,
     time_period TEXT DEFAULT 'Monthly'
 );
