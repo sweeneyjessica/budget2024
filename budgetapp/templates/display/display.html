@@ -4,6 +4,7 @@
     <h1>{% block title %}Data{% endblock %}</h1>
     {% if g.user %}
         <a class="action" href="{{ url_for('upload.upload') }}">Upload</a>
+        <a class="action" href="{{ url_for('display.trash') }}">Delete</a>
     {% endif %}
 {% endblock %}
 

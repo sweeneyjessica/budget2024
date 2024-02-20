@@ -7,18 +7,20 @@ from flask import (
 from budgetapp.db import get_db
 from budgetapp.auth import login_required
 
+import pandas as pd
+
 bp = Blueprint('display', __name__, url_prefix='/display')
 
-@bp.route('/debit')
+@bp.route('/debit', methods=('GET', 'POST'))
 @login_required
 def debit():
     db = get_db()
     data = db.execute(
-        'SELECT descr, amount'
+        'SELECT descr, parsed_descr, amount'
         ' FROM debit d JOIN user u ON d.user_id = u.id'
         ' ORDER BY uploaded_at DESC'
-    ).fetchmany(20)
-    return render_template('display/display.html', headers=['Description', 'Amount'], data=data)
+    ).fetchall() #.fetchmany(20)
+    return render_template('display/display.html', headers=['Description', 'Parsed Description', 'Amount'], data=data)
 
 
 @bp.route('/credit')
@@ -79,3 +81,27 @@ def budget():
         ' FROM budget'
     ).fetchall()
     return render_template('display/display.html', headers=['Category', 'Dollar Limit', 'Time Period'], data=data)
+
+@bp.route('/scratch')
+@login_required
+def scratch():
+    db = get_db()
+    data = db.execute(
+        'SELECT DISTINCT descr'
+        'FROM debit'
+    )
+
+    df = pd.DataFrame(data)
+
+    df['parsed']
+
+@bp.route('/trash')
+@login_required
+def trash():
+    table = request.referrer.rsplit('/', maxsplit=1)[-1]
+    db = get_db()
+    if table == 'categories':
+        db.execute('DELETE FROM merchant_to_category')
+        db.commit()
+
+    return redirect(url_for(f"display.{table}"))
