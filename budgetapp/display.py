@@ -50,27 +50,17 @@ def capone():
     return render_template('display/display.html', headers=['Description', 'Amount', 'Date Uploaded'], data=data)
 
 
-@bp.route('/categories')
+@bp.route('/merchants')
 @login_required
 def categories():
     db = get_db()
     data = db.execute(
         'SELECT merchant, category, information, tags, uploaded_at'
-        ' FROM merchant_to_category'
+        ' FROM merchants'
         ' ORDER BY uploaded_at DESC'
     ).fetchmany(20)
     return render_template('display/display.html', headers=['Merchant', 'Category', 'Information', 'Tags', 'Date Uploaded'], data=data)
 
-@bp.route('/dashboard')
-@login_required
-def dashboard():
-    db = get_db()
-    data = db.execute(
-        'SELECT m.category, round(sum(d.amount), 2)'
-        ' FROM debit d JOIN merchant_to_category m ON d.descr = m.merchant'
-        ' GROUP BY m.category'
-    ).fetchall()
-    return render_template('display/display.html', headers=['Category', 'Amount'], data=data)
 
 @bp.route('/budget')
 @login_required
@@ -95,13 +85,18 @@ def scratch():
 
     df['parsed']
 
+
 @bp.route('/trash')
 @login_required
 def trash():
+    # so technically you can't click any links to delete the user table, 
+    # but you might be able to send a curl request that deletes stuff 
+    # that the user shouldn't be able to see. need to look into db
+    # permissions maybe? or maybe i can restrict this somehow with info
+    # from the request object
     table = request.referrer.rsplit('/', maxsplit=1)[-1]
     db = get_db()
-    if table == 'categories':
-        db.execute('DELETE FROM merchant_to_category')
-        db.commit()
+    db.execute(f'DELETE FROM {table}')
+    db.commit()
 
     return redirect(url_for(f"display.{table}"))

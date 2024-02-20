@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS debit;
 DROP TABLE IF EXISTS credit;
 DROP TABLE IF EXISTS transaction_quarantine;
-DROP TABLE IF EXISTS merchant_to_category;
+DROP TABLE IF EXISTS merchants;
 DROP TABLE IF EXISTS travel;
 DROP TABLE IF EXISTS budget;
 
@@ -49,7 +49,7 @@ CREATE TABLE transaction_quarantine (
   amount REAL
 );
 
-CREATE TABLE merchant_to_category (
+CREATE TABLE merchants (
   merchant TEXT PRIMARY KEY NOT NULL,
   category TEXT NOT NULL,
   information TEXT,
