@@ -7,6 +7,8 @@ from werkzeug.utils import secure_filename
 
 from budgetapp.db import get_db
 from budgetapp.auth import login_required
+from budgetapp.parsing import parse_value, auto_label
+
 import csv
 import os
 import pandas as pd 
@@ -43,23 +45,25 @@ def upload():
                     if filetype == 'capone':
                         if len(row) != 7: 
                             continue # change to quarantine at some point
+                        
+                        parsed_descr = parse_value(row[3])
 
                         if row[5] != '': # debit 
                             db.execute(
-                                "INSERT INTO debit (user_id, transaction_date, card_no, descr, amount) VALUES (?, ?, ?, ?, ?)",
-                                (g.user['id'], row[0], row[2], row[3], row[5])
+                                "INSERT INTO debit (user_id, transaction_date, card_no, descr, parsed_descr, amount) VALUES (?, ?, ?, ?, ?, ?)",
+                                (g.user['id'], row[0], row[2], row[3], parsed_descr, row[5])
                             )
                             db.commit()
                         elif row[6] != '': #credit
                             db.execute(
-                                "INSERT INTO credit (user_id, transaction_date, card_no, descr, amount) VALUES (?, ?, ?, ?, ?)",
-                                (g.user['id'], row[0], row[2], row[3], row[6])
+                                "INSERT INTO credit (user_id, transaction_date, card_no, descr, parsed_descr, amount) VALUES (?, ?, ?, ?, ?, ?)",
+                                (g.user['id'], row[0], row[2], row[3], parsed_descr, row[6])
                             )
                             db.commit()
                         else:
                             db.execute(
-                                "INSERT INTO transaction_quarantine (user_id, transaction_date, card_no, descr) VALUES (?, ?, ?, ?)",
-                                (g.user['id'], row[0], row[2], row[3])
+                                "INSERT INTO transaction_quarantine (user_id, transaction_date, card_no, descr, parsed_descr) VALUES (?, ?, ?, ?, ?)",
+                                (g.user['id'], row[0], row[2], row[3], parsed_descr)
                             )
                             db.commit()
                             error = "No transaction amount found."
@@ -115,23 +119,51 @@ def categorize_merchant():
     #     # ' WHERE COUNT(descr) > 1 AND amount > 20.0'
     # ).fetchall()
 
+    # list of all descriptions where:
+    #  - there are 2+ of that description in dataset
+    #  - the average amount is > $20
+
     txns = db.execute(
-        'SELECT descr, COUNT(*) AS num_txns '
+        'SELECT parsed_descr, COUNT(*) AS num_txns, AVG(amount) AS average_amount'
         ' FROM debit'
-        ' GROUP BY descr'
-        ' ORDER BY num_txns DESC'
+        ' GROUP BY parsed_descr'
     ).fetchall()
 
-    # txns = pd.DataFrame(txns).to_json()
-    return render_template('display/display.html', headers=['Description', 'Count'], data=txns)
+    df = pd.DataFrame(txns)
+    df.columns = ['parsed_descr', 'num_txns', 'average_amount']
 
+    labeled_df, unlabeled_df = auto_label(df)
+    unlabeled_descr = unlabeled_df['parsed_descr']
+    unlabeled_count = unlabeled_df['num_txns']
+    unlabeled_amount = unlabeled_df['average_amount']
+
+    unlabeled_df = [[descr, count, amount] for descr, count, amount in zip(unlabeled_descr, unlabeled_count, unlabeled_amount)]
+
+    for index, row in labeled_df.iterrows():
+        db.execute('INSERT OR REPLACE INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+                (row['parsed_descr'], row['Category'], row['Information'], row['Tags'])
+        )
+        db.commit()
+
+    fields = ['Category', 'Information', 'Tags']
 
     if request.method == 'POST':
-        return request.form
-        # for merchant in request.form:
-        #     db.execute(
-        #         'REPLACE INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?)',
-        #         (merchant, request.form[merchant]category, information, tags)
-        #     )
+        for_each_merchant = {key: "" for key in fields}
+        for merchant_field in request.form:
+            merchant = merchant_field.rsplit(":", maxsplit=1)[0]
+            field = merchant_field.rsplit(":", maxsplit=1)[1]
 
-    # return txns # render_template('upload/categorize_merchants.html', length=len(txns), txns=txns)
+            for_each_merchant[field] = request.form[merchant_field]
+
+            if field == fields[-1]:
+                db.execute(
+                    'REPLACE INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+                    (merchant, for_each_merchant['Category'], for_each_merchant['Information'], for_each_merchant['Tags'])
+                )
+                db.commit()
+                for_each_merchant = {key: "" for key in fields}
+
+        data = db.execute('SELECT * FROM merchant_to_category')
+        return render_template('display/display.html', headers=['Merchant', 'Category', 'Information', 'Tags', 'Uploaded At'], data=data)
+
+    return render_template('upload/categorize_merchants.html', headers=['Description', 'Count', 'Average']+fields, data=unlabeled_df, fields=fields)

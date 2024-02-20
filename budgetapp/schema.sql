@@ -20,6 +20,7 @@ CREATE TABLE debit (
   transaction_date DATE NOT NULL,
   card_no INTEGER NOT NULL,
   descr TEXT NOT NULL,
+  parsed_descr TEXT NOT NULL,
   amount REAL NOT NULL,
   FOREIGN KEY (user_id) REFERENCES user (id),
   FOREIGN KEY (descr) REFERENCES merchant_to_category (merchant)
@@ -32,6 +33,7 @@ CREATE TABLE credit (
   transaction_date DATE NOT NULL,
   card_no INTEGER NOT NULL,
   descr TEXT NOT NULL,
+  parsed_descr TEXT NOT NULL,
   amount REAL NOT NULL,
   FOREIGN KEY (user_id) REFERENCES user (id)
 );
@@ -43,6 +45,7 @@ CREATE TABLE transaction_quarantine (
   transaction_date DATE,
   card_no INTEGER,
   descr TEXT,
+  parsed_descr TEXT,
   amount REAL
 );
 
