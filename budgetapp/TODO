@@ -8,3 +8,20 @@ x 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboar
 2024-02-16 click into week on bar chart and see transactions +dashboard
 2024-02-17 breakaway flow charts of where money since last paycheck has gone +dashboard
 (A) 2024-02-17 create useful sql queries for future use
+2024-02-18 add WTForms to make form input JSON?
+2024-02-18 add "trash data" option to display pages, allow delete somehow
+
+note:
+autocomplete for forms
+<label for="myFruit">What's your favorite fruit?</label>
+<input type="text" name="myFruit" id="myFruit" list="mySuggestion" />
+<datalist id="mySuggestion">
+  <option>Apple</option>
+  <option>Banana</option>
+  <option>Blackberry</option>
+  <option>Blueberry</option>
+  <option>Lemon</option>
+  <option>Lychee</option>
+  <option>Peach</option>
+  <option>Pear</option>
+</datalist>
