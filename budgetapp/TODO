@@ -1,27 +1,13 @@
-x 2024-02-03 2024-02-06 add callback functions to +dashboard
-2024-02-03 add automatic +labeling to uploads
-(A) 2024-02-03 add hand +labeling interface
-x 2024-02-16 2024-02-16 line chart +dashboard
-x 2024-02-16 2024-02-16 pie chart all expenses +dashboard
-x 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboard
+x (A) 2024-02-17 create useful sql queries for future use
+x 2024-02-03 2024-02-19 add automatic +labeling to uploads
 2024-02-16 add category radio buttons to all graphs on +dashboard
 2024-02-16 click into week on bar chart and see transactions +dashboard
 2024-02-17 breakaway flow charts of where money since last paycheck has gone +dashboard
-(A) 2024-02-17 create useful sql queries for future use
-2024-02-18 add WTForms to make form input JSON?
-2024-02-18 add "trash data" option to display pages, allow delete somehow
-
-note:
-autocomplete for forms
-<label for="myFruit">What's your favorite fruit?</label>
-<input type="text" name="myFruit" id="myFruit" list="mySuggestion" />
-<datalist id="mySuggestion">
-  <option>Apple</option>
-  <option>Banana</option>
-  <option>Blackberry</option>
-  <option>Blueberry</option>
-  <option>Lemon</option>
-  <option>Lychee</option>
-  <option>Peach</option>
-  <option>Pear</option>
-</datalist>
+2024-02-18 add WTForms to make form input JSON when returning POST data?
+2024-02-21 add html for autocomplete to category entry (<datalist id="mylist"> with <input list="mylist">)
+x (A) 2024-02-03 add hand +labeling interface
+x 2024-02-03 2024-02-06 add callback functions to +dashboard
+x 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboard
+x 2024-02-16 2024-02-16 line chart +dashboard
+x 2024-02-16 2024-02-16 pie chart all expenses +dashboard
+x 2024-02-18 2024-02-20 add "trash data" option to display pages, allow delete somehow
