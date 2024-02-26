@@ -67,6 +67,17 @@ def init_callbacks(dash_app):
         return pd.DataFrame(df)
     
 
+    def get_categories():
+        db = get_db()
+
+        df = db.execute(
+            'SELECT DISTINCT category AS Category FROM merchants'
+        )
+        df = pd.DataFrame(df)
+        df.columns=['Category']
+
+        return df['Category'].tolist()
+
     # Add controls to build the interaction
     @callback(
         Output(component_id='graph', component_property='children'),
@@ -79,42 +90,64 @@ def init_callbacks(dash_app):
             return [dcc.Graph(figure=fig)]
 
         elif graph_chosen == 'Bar chart':
-            df = get_weekly_category_spend_data('Dining')
-            df['Average'] = df['Total_by_week'].mean()
-            fig = px.bar(df, x='x_axis', y='Total_by_week')
-            # TODO: figure out how to make it say 'average' and not 'trace 1'
-            fig.add_traces([go.Line(x=df['x_axis'], y=df['Average'])]) # they say go.Line is deprecated
-            return [dcc.RadioItems(['Average', 'Budget'], id='bar-choices'), dcc.Graph(figure=fig, id='bar-graph'), html.Div(id='table-container')]
+            categories = get_categories()
+            return [dcc.Dropdown(categories, id='category-choices'), dcc.Graph(figure={}, id='bar-graph')]
         elif graph_chosen == 'Line chart':
-            df = get_weekly_category_spend_data('Administrative')
-            fig = px.line(df, x='x_axis', y='Total_by_week')
-            return [dcc.Graph(figure=fig)]
-
+            categories = get_categories()
+            return [dcc.Dropdown(categories, id='category-choices'), dcc.Graph(figure={}, id='line-graph')]
+        
     @callback(
         Output(component_id='bar-graph', component_property='figure'),
-        Input(component_id='bar-choices', component_property='value'),
+        Input(component_id='category-choices', component_property='value'), 
     )
-    def update_bar_graph(trace_chosen):
-        df = get_weekly_category_spend_data('Dining')
+    def select_bar_category(category_chosen):
+        df = get_weekly_category_spend_data(category_chosen)
 
-        db = get_db()
-
-        budget_df = db.execute(
-                'SELECT category, dollar_limit'
-                ' FROM budget'
-            )
-                
-        budget_df = pd.DataFrame(budget_df)
-        budget_df.columns = ['Category', 'Dollar Limit']
-        budget_df = budget_df.set_index('Category')
-
-        df['Budget'] = budget_df.loc['Dining', 'Dollar Limit']
         df['Average'] = df['Total_by_week'].mean()
-        fig = px.bar(df, x='Week Number', y='Total_by_week')
+        fig = px.bar(df, x='x_axis', y='Total_by_week')
         # TODO: figure out how to make it say 'average' and not 'trace 1'
-        fig.add_traces([go.Line(x=df['Week Number'], y=df[trace_chosen])]) # they say go.Line is deprecated
+        fig.add_traces([go.Line(x=df['x_axis'], y=df['Average'])]) # they say go.Line is deprecated
 
         return fig
+    
+
+    @callback(
+        Output(component_id='line-graph', component_property='figure'),
+        Input(component_id='category-choices', component_property='value'), 
+    )
+    def select_bar_category(category_chosen):
+        df = get_weekly_category_spend_data(category_chosen)
+
+        fig = px.line(df, x='x_axis', y='Total_by_week')
+        return fig
+
+
+    # @callback(
+    #     Output(component_id='bar-graph', component_property='figure'),
+    #     Input(component_id='bar-choices', component_property='value'),
+    #     Input(component_id='category-choices', component_property='value')
+    # )
+    # def update_bar_graph(trace_chosen, category_chosen):
+    #     df = get_weekly_category_spend_data(category_chosen)
+
+    #     db = get_db()
+
+    #     budget_df = db.execute(
+    #             'SELECT category, dollar_limit'
+    #             ' FROM budget'
+    #         )
+                
+    #     budget_df = pd.DataFrame(budget_df)
+    #     budget_df.columns = ['Category', 'Dollar Limit']
+    #     budget_df = budget_df.set_index('Category')
+
+    #     df['Budget'] = budget_df.loc[category_chosen, 'Dollar Limit']
+    #     df['Average'] = df['Total_by_week'].mean()
+    #     fig = px.bar(df, x='Week Number', y='Total_by_week')
+    #     # TODO: figure out how to make it say 'average' and not 'trace 1'
+    #     fig.add_traces([go.Line(x=df['Week Number'], y=df[trace_chosen])]) # they say go.Line is deprecated
+
+    #     return fig
 
     @callback(
         Output("table-container", "children"),
