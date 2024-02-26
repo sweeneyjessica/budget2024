@@ -109,8 +109,3 @@ def auto_label(df):
     # # labeled_df.to_csv('labeled.csv')
 
     return labeled_df, df[df['labels'] == False]
-
-
-df = get_df()
-df['parsed_descr'] = parse_col(df['descr'])
-df.to_csv('parsed.csv')
