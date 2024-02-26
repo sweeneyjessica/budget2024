@@ -18,3 +18,4 @@ build/
 
 scratch.py
 dash_app.py
+sql_functions.py
