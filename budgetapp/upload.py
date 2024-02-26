@@ -71,12 +71,18 @@ def upload():
                     elif filetype == 'categories':
                         if len(row) != 4:
                             continue
-                        
-                        db.execute(
-                            'INSERT INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
-                            (row[0], row[1], row[2], row[3])
-                        )
-                        db.commit()
+                        try:
+                            db.execute(
+                                'INSERT INTO merchants (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+                                (parse_value(row[0]), row[1], row[2], row[3])
+                            )
+                            db.commit()
+                        except:
+                            db.execute(
+                                'INSERT INTO merchants_quarantine (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+                                (parse_value(row[0]), row[1], row[2], row[3])
+                            )
+                            db.commit()
 
 
             return redirect(url_for(f'display.{filetype}'))
@@ -101,7 +107,7 @@ def set_budget():
     else:
         categories = db.execute(
             'SELECT DISTINCT category '
-            ' FROM merchant_to_category'
+            ' FROM merchants'
         ).fetchall()
 
     return render_template('upload/set_budget.html', categories=categories)
@@ -140,7 +146,7 @@ def categorize_merchant():
     unlabeled_df = [[descr, count, amount] for descr, count, amount in zip(unlabeled_descr, unlabeled_count, unlabeled_amount)]
 
     for index, row in labeled_df.iterrows():
-        db.execute('INSERT OR REPLACE INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+        db.execute('INSERT OR REPLACE INTO merchants (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
                 (row['parsed_descr'], row['Category'], row['Information'], row['Tags'])
         )
         db.commit()
@@ -157,13 +163,13 @@ def categorize_merchant():
 
             if field == fields[-1]:
                 db.execute(
-                    'REPLACE INTO merchant_to_category (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
+                    'REPLACE INTO merchants (merchant, category, information, tags) VALUES (?, ?, ?, ?)',
                     (merchant, for_each_merchant['Category'], for_each_merchant['Information'], for_each_merchant['Tags'])
                 )
                 db.commit()
                 for_each_merchant = {key: "" for key in fields}
 
-        data = db.execute('SELECT * FROM merchant_to_category')
+        data = db.execute('SELECT * FROM merchants')
         return render_template('display/display.html', headers=['Merchant', 'Category', 'Information', 'Tags', 'Uploaded At'], data=data)
 
     return render_template('upload/categorize_merchants.html', headers=['Description', 'Count', 'Average']+fields, data=unlabeled_df, fields=fields)
