@@ -1,10 +1,11 @@
 x (A) 2024-02-17 create useful sql queries for future use
 x 2024-02-03 2024-02-19 add automatic +labeling to uploads
-2024-02-16 add category radio buttons to all graphs on +dashboard
+x 2024-02-16 2024-02-26 add category radio buttons to all graphs on +dashboard
 2024-02-16 click into week on bar chart and see transactions +dashboard
 2024-02-17 breakaway flow charts of where money since last paycheck has gone +dashboard
 2024-02-18 add WTForms to make form input JSON when returning POST data?
 2024-02-21 add html for autocomplete to category entry (<datalist id="mylist"> with <input list="mylist">)
+2024-02-26 make the weeks with zero spend show up on bar chart +dashboard
 x (A) 2024-02-03 add hand +labeling interface
 x 2024-02-03 2024-02-06 add callback functions to +dashboard
 x 2024-02-03 2024-02-16 bar chart with average across months indicated +dashboard
