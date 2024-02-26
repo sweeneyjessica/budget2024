@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, callback, Output, Input
+from dash import Dash, html, dcc, callback, Output, Input, exceptions, dash_table
 from budgetapp.db import get_db
 import pandas as pd
 import plotly.express as px
@@ -32,7 +32,7 @@ def init_callbacks(dash_app):
 
         df = db.execute(
                 'SELECT m.category AS Category, round(sum(d.amount), 2) AS Total'
-                ' FROM debit d JOIN merchant_to_category m ON d.descr = m.merchant'
+                ' FROM debit d JOIN merchants m ON d.descr = m.merchant'
                 ' GROUP BY m.category'
             )
 
@@ -42,24 +42,26 @@ def init_callbacks(dash_app):
         db = get_db()
 
         df = db.execute(
-                'SELECT m.category AS Category, d.amount AS Total, d.transaction_date AS Date'
-                ' FROM debit d JOIN merchant_to_category m ON d.descr = m.merchant'
+                'SELECT m.category AS Category, '
+                '       d.amount AS Total, '
+                '       substr(d.transaction_date, 0, 5) AS Year, '
+                '       substr(d.transaction_date, 6, 2) AS Month, '
+                '       substr(d.transaction_date, 9, 2) AS Day, '
+                '       w.quarter as Week_Number'
+                ' FROM debit d '
+                ' JOIN merchants m ON d.descr = m.merchant'
+                ' JOIN weekly_quarters w on Day = w.day_of_month'
             )
         
         df = pd.DataFrame(df)
 
-        df.columns = ['Category', 'Total', 'Date']
+        df.columns = ['Category', 'Total', 'Year', 'Month', 'Day', 'Week_Number']
+        df['x_axis'] = df['Year'].astype(str)+df['Month'].astype(str)+df['Week_Number'].astype(str)
 
-        df['Date'] = df['Date'].astype('datetime64[ns]')
-
-        df['Week Number'] = df['Date'].dt.isocalendar().week
-
-        df = df.groupby(by=['Week Number', 'Category']).aggregate({'Total': sum})
+        df = df.groupby(by=['x_axis', 'Category']).aggregate({'Total': sum})
 
         df = df.add_suffix('_by_week').reset_index()
         
-        df = df[df['Week Number'] > 5]
-
         df = df[(df['Category'] == category_chosen)]
 
         return pd.DataFrame(df)
@@ -79,13 +81,13 @@ def init_callbacks(dash_app):
         elif graph_chosen == 'Bar chart':
             df = get_weekly_category_spend_data('Dining')
             df['Average'] = df['Total_by_week'].mean()
-            fig = px.bar(df, x='Week Number', y='Total_by_week')
+            fig = px.bar(df, x='x_axis', y='Total_by_week')
             # TODO: figure out how to make it say 'average' and not 'trace 1'
-            fig.add_traces([go.Line(x=df['Week Number'], y=df['Average'])]) # they say go.Line is deprecated
-            return [dcc.RadioItems(['Average', 'Budget'], id='bar-choices'), dcc.Graph(figure=fig, id='bar-graph')]
+            fig.add_traces([go.Line(x=df['x_axis'], y=df['Average'])]) # they say go.Line is deprecated
+            return [dcc.RadioItems(['Average', 'Budget'], id='bar-choices'), dcc.Graph(figure=fig, id='bar-graph'), html.Div(id='table-container')]
         elif graph_chosen == 'Line chart':
             df = get_weekly_category_spend_data('Administrative')
-            fig = px.line(df, x='Week Number', y='Total_by_week')
+            fig = px.line(df, x='x_axis', y='Total_by_week')
             return [dcc.Graph(figure=fig)]
 
     @callback(
@@ -113,3 +115,22 @@ def init_callbacks(dash_app):
         fig.add_traces([go.Line(x=df['Week Number'], y=df[trace_chosen])]) # they say go.Line is deprecated
 
         return fig
+
+    @callback(
+        Output("table-container", "children"),
+        Input("bar-graph", "clickData"),
+    )
+    def fig_click(clickData):
+        if not clickData:
+            raise exceptions.PreventUpdate
+        
+        df = get_weekly_category_spend_data('Dining')
+
+        tab = dash_table.DataTable(
+            data=df.loc[df["x_axis"].eq(clickData["points"][0]["x"])]
+            .tail(5)
+            .to_dict("records"),
+            columns=[{"name": i, "id": i} for i in df.columns],
+        )
+
+        return tab
