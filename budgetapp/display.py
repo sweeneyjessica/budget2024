@@ -73,17 +73,17 @@ def budget():
     return render_template('display/display.html', headers=['Category', 'Dollar Limit', 'Time Period'], data=data)
 
 @bp.route('/scratch')
-@login_required
 def scratch():
     db = get_db()
     data = db.execute(
-        'SELECT DISTINCT descr'
-        'FROM debit'
-    )
+        'SELECT d.amount AS Total, substr(d.transaction_date, 9, 2) AS day, w.quarter'
+        ' FROM debit d'
+        ' LEFT JOIN weekly_quarters w ON day = w.day_of_month'
+        ' ORDER BY day'
+    ).fetchall()
 
-    df = pd.DataFrame(data)
-
-    df['parsed']
+    return render_template('display/display.html', headers=['total', 'year', 'day', 'month', 'quarter'], data=data)
+    # return render_template('display/display.html', headers=['Category', 'Total', 'Year', 'Month'], data=data)
 
 
 @bp.route('/trash')
@@ -94,6 +94,8 @@ def trash():
     # that the user shouldn't be able to see. need to look into db
     # permissions maybe? or maybe i can restrict this somehow with info
     # from the request object
+
+    # also following 'delete' from display/capone will break
     table = request.referrer.rsplit('/', maxsplit=1)[-1]
     db = get_db()
     db.execute(f'DELETE FROM {table}')
