@@ -87,36 +87,36 @@ CREATE TABLE weekly_quarters (
     quarter INTEGER
 );
 
-INSERT INTO weekly_quarters VALUES (1, 1);
-INSERT INTO weekly_quarters VALUES (2, 1);
-INSERT INTO weekly_quarters VALUES (3, 1);
-INSERT INTO weekly_quarters VALUES (4, 1);
-INSERT INTO weekly_quarters VALUES (5, 1);
-INSERT INTO weekly_quarters VALUES (6, 1);
-INSERT INTO weekly_quarters VALUES (7, 1);
-INSERT INTO weekly_quarters VALUES (8, 1);
-INSERT INTO weekly_quarters VALUES (9, 2);
-INSERT INTO weekly_quarters VALUES (10, 2);
-INSERT INTO weekly_quarters VALUES (11, 2);
-INSERT INTO weekly_quarters VALUES (12, 2);
-INSERT INTO weekly_quarters VALUES (13, 2);
-INSERT INTO weekly_quarters VALUES (14, 2);
-INSERT INTO weekly_quarters VALUES (15, 2);
-INSERT INTO weekly_quarters VALUES (16, 2);
-INSERT INTO weekly_quarters VALUES (17, 3);
-INSERT INTO weekly_quarters VALUES (18, 3);
-INSERT INTO weekly_quarters VALUES (19, 3);
-INSERT INTO weekly_quarters VALUES (20, 3);
-INSERT INTO weekly_quarters VALUES (21, 3);
-INSERT INTO weekly_quarters VALUES (22, 3);
-INSERT INTO weekly_quarters VALUES (23, 3);
-INSERT INTO weekly_quarters VALUES (24, 4);
-INSERT INTO weekly_quarters VALUES (25, 4);
-INSERT INTO weekly_quarters VALUES (26, 4);
-INSERT INTO weekly_quarters VALUES (27, 4);
-INSERT INTO weekly_quarters VALUES (28, 4);
-INSERT INTO weekly_quarters VALUES (29, 4);
-INSERT INTO weekly_quarters VALUES (30, 4);
-INSERT INTO weekly_quarters VALUES (31, 4);
-
-
+INSERT INTO weekly_quarters 
+  VALUES 
+  	(1, 1),
+    (2, 1),
+    (3, 1),
+    (4, 1),
+    (5, 1),
+    (6, 1),
+    (7, 1),
+    (8, 1),
+    (9, 2),
+    (10, 2),
+    (11, 2),
+    (12, 2),
+    (13, 2),
+    (14, 2),
+    (15, 2),
+    (16, 2),
+    (17, 3),
+    (18, 3),
+    (19, 3),
+    (20, 3),
+    (21, 3),
+    (22, 3),
+    (23, 3),
+    (24, 4),
+    (25, 4),
+    (26, 4),
+    (27, 4),
+    (28, 4),
+    (29, 4),
+    (30, 4),
+    (31, 4);
